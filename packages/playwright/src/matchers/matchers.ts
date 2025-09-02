@@ -310,8 +310,14 @@ export function toHaveCSS(
   locator: LocatorEx,
   name: string,
   expected: string | RegExp,
+  styles?: string | RegExp | Object,
   options?: { timeout?: number },
 ) {
+  if (typeof styles === 'object' || typeof styles === 'function') {
+    return toEqual.call(this, 'toHaveCSS', locator, 'Locator', async (isNot, timeout) => {
+      return await locator._expect('to.have.css', { expressionArg: name, expectedValue: styles, isNot, timeout });
+    }, styles, options);
+  }
   return toMatchText.call(this, 'toHaveCSS', locator, 'Locator', async (isNot, timeout) => {
     const expectedText = serializeExpectedTextValues([expected]);
     return await locator._expect('to.have.css', { expressionArg: name, expectedText, isNot, timeout });
